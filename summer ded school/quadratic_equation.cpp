@@ -14,7 +14,7 @@ enum Token {
     INF_ROOTS,
     UNKNOWN_AMOUNT,
     ERROR,
-    COOL,
+    EQUAL,
     GREATER,
     LESS
 };
@@ -76,15 +76,15 @@ int main() {
 
 const int compare_doubles(const double num1, const double num2)
 {
-    if (fabs(num1 - num2) < Eps)
+    if (fabs(num1 - num2) == 0)
     {
-        return COOL;
+        return EQUAL;
     }
-    else if (fabs(num1 - num2) > Eps)
+    else if (fabs(num1 - num2) < Eps)
     {
         return GREATER;
     }
-    else 
+    else if (fabs(num1 - num2) > -Eps) 
     {
         return LESS;
     }
@@ -94,11 +94,11 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
 {
     double discriminant = 0;
 
-    if (a == 0)
+    if (compare_doubles(a, 0.0) == EQUAL)
     {
-        if (b == 0)
+        if (compare_doubles(b, 0.0) == EQUAL)
         {
-            if (c == 0)
+            if (compare_doubles(c, 0.0) == EQUAL)
             {
                 return INF_ROOTS;
             }
@@ -112,7 +112,7 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
             {
                 *x1 = sqrt(-c / a);
                 *x2 = -sqrt(-c / a);
-                if (*x1 != *x2) return TWO_ROOTS;
+                if (compare_doubles(*x1, *x2) != EQUAL) return TWO_ROOTS;
                 return ONE_ROOT;
             }
         }
@@ -124,7 +124,7 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
     discriminant = b*b - 4 * a * c;
     *x1 = (-b + sqrt(discriminant)) / (2 * a);
     *x2 = (-b - sqrt(discriminant)) / (2 * a);
-    if (*x1 != *x2) return TWO_ROOTS;
+    if (compare_doubles(*x1, *x2) != EQUAL) return TWO_ROOTS;
     return ONE_ROOT;
 }
 
