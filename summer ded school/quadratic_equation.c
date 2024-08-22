@@ -4,11 +4,17 @@
 #include <ctype.h>
 
 
-const int SS_INF_ROOTS = 3;
+enum Token {
+    NO_ROOTS,
+    ONE_ROOT,
+    TWO_ROOTS,
+    INF_ROOTS
+};
 
 
-int quad_solve(double a, double b, double c, double *x1, double *x2);
-void valid_input(double *n);
+int quad_solve(double a, double b, double c, double *x1, double *x2); // function that solves quadratic equations
+void valid_input(double *n); // function that has to check if given number is valid
+int output_fun(int amount_of_roots, double *x1, double *x2); // output function
 
 
 int main() {
@@ -34,35 +40,17 @@ int main() {
     //valid_input(&c);
 
     // проверить что возвращает сканф
-    
-    
     // 43 325 3526edwd
+
     double x1 = 0;
     double x2 = 0;
 
     int amount_of_roots = 0;
     amount_of_roots = quad_solve(a, b, c, &x1, &x2);
     
-    switch (amount_of_roots)
-    {
-    case 0:
-        printf("Given equation has no roots\n");
-        break;
-    case 1:
-        printf("Given equation has 1 root: %lg\n", x1);
-        break;
-    case 2:
-        printf("Given equation has 2 roots:\n first root is %lg\n second root is %lg\n", x1, x2);
-        break;
-    case SS_INF_ROOTS:
-        printf("Given equation has infinite amount of roots\n");
-        break;
-    default:
-        printf("UNKNOWN AMOUNT OF ROOTS\n");
-        return 1;
-    }
+    output_fun(amount_of_roots, &x1, &x2);
 
-// enum
+    // enum - done
     return 0;
 }
 
@@ -106,6 +94,7 @@ int quad_solve(double a, double b, double c, double *x1, double *x2)
 }
 // писать комменты к функциям
 
+
 void valid_input(double *n) 
 {
     for (*n; (*n = getchar()) != EOF;)
@@ -115,4 +104,28 @@ void valid_input(double *n)
             printf("Incorrect input, try again\n");            
         }
     }
+}
+
+
+int output_fun(int amount_of_roots, double *x1, double *x2)
+{
+    switch (amount_of_roots)
+        {
+        case NO_ROOTS:
+            printf("Given equation has no roots\n");
+            break;
+        case ONE_ROOT:
+            printf("Given equation has 1 root: %lg\n", *x1);
+            break;
+        case TWO_ROOTS:
+            printf("Given equation has 2 roots:\n first root is %lg\n second root is %lg\n", *x1, *x2);
+            break;
+        case INF_ROOTS:
+            printf("Given equation has infinite amount of roots\n");
+            break;
+        default:
+            printf("UNKNOWN AMOUNT OF ROOTS\n");
+            return 1;
+        }
+    return 0;
 }
