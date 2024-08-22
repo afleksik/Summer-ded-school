@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <assert.h>
 
 const double Eps = 1e-6;
 
-
+// разные enum
 enum Token {
     OK,
     NO_ROOTS = 10,
@@ -21,9 +22,11 @@ enum Token {
 
                                                                                               // писать комменты к функциям
 const int valid_input(double *n);                                                             // function that has to check if given number is valid
-const int output_fun(int amount_of_roots, double *x1, double *x2);                            // output function
+const int output_fun(const int amount_of_roots, double *x1, double *x2);                      // output function
 const int quad_solve(const double a, const double b, const double c, double *x1, double *x2); // function that solves quadratic equations
 const int compare_doubles(const double num1, const double num2);                              // функция сравнения даблов
+const double get_value(const double *num);                                                    // функция запроса вывода аргумента
+
 
 int main() {
 
@@ -37,15 +40,29 @@ int main() {
     printf("Enter coef a:\n");
     if (valid_input(&a) == OK)
     {
+        printf("Given number: %lg\n", get_value(&a));
         printf("Enter coef b:\n");
+    }
+    else if (valid_input(&a) == ERROR)
+    {
+        printf("Given number: %lg\n", get_value(&a));
+        printf("INCORRECT INPUT\n");
     }
     if (valid_input(&b) == OK)
     {
         printf("Enter coef c:\n");
     }
+    else if (valid_input(&a) == ERROR)
+    {
+        printf("INCORRECT INPUT\n");
+    }
     if (valid_input(&c) == OK)
     {
         ;
+    }
+    else if (valid_input(&a) == ERROR)
+    {
+        printf("INCORRECT INPUT\n");
     }
     
 
@@ -73,27 +90,31 @@ int main() {
 
     return 0;
 }
+// сделать структуру
 
 const int compare_doubles(const double num1, const double num2)
 {
-    if (fabs(num1 - num2) == 0)
+    if (fabs(num1 - num2) < 2 * Eps)
     {
         return EQUAL;
     }
-    else if (fabs(num1 - num2) < Eps)
+    else if (num1 - num2 > Eps)
     {
         return GREATER;
     }
-    else if (fabs(num1 - num2) > -Eps) 
+    else if (num1 - num2 < -Eps) 
     {
         return LESS;
     }
+    return ERROR;
 }
 
 const int quad_solve(const double a, const double b, const double c, double *x1, double *x2)
 {
     double discriminant = 0;
-
+    assert(x1 != nullptr);
+    assert(x2 != nullptr);
+    // линейный случай в отдельную функцию
     if (compare_doubles(a, 0.0) == EQUAL)
     {
         if (compare_doubles(b, 0.0) == EQUAL)
@@ -103,15 +124,16 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
                 return INF_ROOTS;
             }
 
-            if (-c / a < 0)
+            if (-c / a < 0) // comp_doubl
             {
                 return NO_ROOTS;
             }
 
-            else if (-c / a > 0)
+            else if (-c / a > 0) // comp_doubl
             {
                 *x1 = sqrt(-c / a);
                 *x2 = -sqrt(-c / a);
+
                 if (compare_doubles(*x1, *x2) != EQUAL) return TWO_ROOTS;
                 return ONE_ROOT;
             }
@@ -124,6 +146,7 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
     discriminant = b*b - 4 * a * c;
     *x1 = (-b + sqrt(discriminant)) / (2 * a);
     *x2 = (-b - sqrt(discriminant)) / (2 * a);
+
     if (compare_doubles(*x1, *x2) != EQUAL) return TWO_ROOTS;
     return ONE_ROOT;
 }
@@ -131,9 +154,12 @@ const int quad_solve(const double a, const double b, const double c, double *x1,
 
 const int valid_input(double *x) 
 {
+    assert(x != nullptr);
+
     int flag = 0;
-    int ch = 0;
+    int ch   = 0;
     flag = scanf("%lg", x);
+
     if (flag == 0)
     {
         return ERROR;
@@ -143,8 +169,12 @@ const int valid_input(double *x)
         do
         {
             ch = getchar();
+            if (isspace(ch) == 0)
+            {
+                return ERROR;
+            }
 
-        }while(ch != '\n');
+        }while(ch != '\n' && ch != EOF);
     }
     else
     {
@@ -154,8 +184,11 @@ const int valid_input(double *x)
 }
 
 
-const int output_fun(int amount_of_roots, double *x1, double *x2)
+const int output_fun(const int amount_of_roots, double *x1, double *x2)
 {
+    assert(x1 != nullptr);
+    assert(x2 != nullptr);
+
     switch (amount_of_roots)
         {
         case NO_ROOTS:
@@ -175,4 +208,11 @@ const int output_fun(int amount_of_roots, double *x1, double *x2)
             return UNKNOWN_AMOUNT;
         }
     return OK;
+}
+
+const double get_value(const double *num) // learn inline functions
+{
+    assert(num != nullptr);
+
+    return *num;
 }
